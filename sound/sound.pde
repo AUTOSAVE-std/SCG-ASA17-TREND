@@ -1,5 +1,9 @@
 import processing.sound.*;
 import processing.video.*;
+
+import processing.pdf.*;
+boolean saveOneFrame = false;
+
 Capture cam;
 Amplitude amp;
 AudioIn in;
@@ -40,14 +44,24 @@ void setup(){
   
 }
 
+void mousePressed() {                     // When a mouse button is pressed,
+  saveOneFrame = true;                    // trigger PDF recording within the draw()
+}
+
 void draw(){
- 
+  if (saveOneFrame == true) {             // When the saveOneFrame boolean is true,
+    beginRecord(PDF, "line-####.pdf");    // start recording to the PDF
+  }
+  
+  
+  
+  
   background(0);
     if (cam.available() == true) {
     cam.read();
   }
-  //image(cam, 0, 0);
-  set(0, 0, cam);
+  image(cam, 0, 0);
+  //set(0, 0, cam);
   float h = map(amp.analyze(), 0, 1, 0, height);
   for(int i=0; i<=width-1; i++) {
     level[i] = level[i+1];
@@ -59,6 +73,14 @@ void draw(){
     line(i,height-level[i],i,height);
   }
  
-  
+
+ 
+ 
+ 
+ 
+  if (saveOneFrame == true) {             // If the PDF has been recording,</em>
+    endRecord();                          // stop recording, 
+    saveOneFrame = false;                 // and set the boolean value to false
+  }
  
 }
