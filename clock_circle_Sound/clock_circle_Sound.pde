@@ -3,8 +3,8 @@ import processing.sound.*;
 color fontcolorDB = color(255, 204, 0);
 color fontcolorSecound = color(255, 204, 0);
 float[] smooth= new float[10];
-color bgc = color(255);
-color fillTimeLapsed = color(153, 64, 188); 
+
+color fillTimeLapsed = color(216, 127, 96); 
 
 // UN CHANGE
 float angle, lastAngle;
@@ -19,18 +19,28 @@ float fullCircleTime;
 int begin = millis(); 
 int duration = 20;
 int time = 20;
- 
+// font 
+PFont font;
 
+//Element
+PImage bg;
+PImage level;
+PImage knob;
 Amplitude amp;
 AudioIn in;
 
 void setup() {
+//size(500,1500);
   fullScreen();
   // sound start
   amp = new Amplitude(this);
   in = new AudioIn(this, 0);
   in.start();
   amp.input(in);
+  bg = loadImage("BG-01.png");
+  level = loadImage("level.png");
+  knob = loadImage("knob.png");
+  font = loadFont("SCG-Bold-200.vlw");
   
   //init smooth val
   for ( int i = 0; i < smooth.length; ++i ){smooth[i] = 0;}
@@ -45,16 +55,24 @@ void setup() {
 
 
 void draw() {
-  background(bgc);
+  background(bg);
+  
+  //Level image here
+  image(level,width/2-233,height/2-443);
+  
+  // Rotate Circle
   pushMatrix();
-  translate(width/2,height/2-200);
+  translate(width/2,height/2-350);
   rotate(PI/1.15);
   
+  // Cycle
   noStroke();
   fill(fillTimeLapsed);
   arc(0,0, d,d, 0,angle);
   popMatrix();
   
+  //KNOB position
+  image(knob,width/2-200,height/2-200);
   lastAngle = angle;
   
   ///currentTime = random(4000)
@@ -63,11 +81,19 @@ void draw() {
   currentTime = smoothsound(h);
   angle = (currentTime/fullCircleTime) * TWO_PI;
   angle %= TWO_PI;
-  textSize(32);
-  text(currentTime, width/2-50,height/2-200);
+  
+// FONT DB current
+  textFont(font, 100);
+  text((int)currentTime, width/2-55,height/2-170);
+
+// FONT secound
+  textFont(font, 200);
   if (time > 0)  time = duration - (millis() - begin)/1000;
-  text(time,  width/2-50,height/2);
-  text(maximumDB,  width/2-50,height/2+300);
+  text(time,  width/2-90,height/2+450);
+  
+//debug max DB  
+  //textFont(font, 20);
+  //text(maximumDB,  width/2-50,height/2+300);
 }
 
 float smoothsound(float s_new) {
