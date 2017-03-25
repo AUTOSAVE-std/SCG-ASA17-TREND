@@ -30,7 +30,6 @@ Amplitude amp;
 AudioIn in;
 
 void setup() {
-//size(500,1500);
   fullScreen();
   // sound start
   amp = new Amplitude(this);
@@ -62,8 +61,8 @@ void draw() {
   
   // Rotate Circle
   pushMatrix();
-  translate(width/2,height/2-350);
-  rotate(PI/1.15);
+  translate(width/2,height/2-200);
+  rotate(PI/1.25);
   
   // Cycle
   noStroke();
@@ -72,12 +71,13 @@ void draw() {
   popMatrix();
   
   //KNOB position
-  image(knob,width/2-200,height/2-200);
+  image(knob,width/2-200,height/2-405);
   lastAngle = angle;
   
   ///currentTime = random(4000)
   
-  float h = map(amp.analyze(), 0, 1, 0, 4000);
+  float h = map(amp.analyze(), 0, 1, 0, 2800);
+  // maximum is 2800
   currentTime = smoothsound(h);
   angle = (currentTime/fullCircleTime) * TWO_PI;
   angle %= TWO_PI;
@@ -90,6 +90,8 @@ void draw() {
   textFont(font, 200);
   if (time > 0)  time = duration - (millis() - begin)/1000;
   text(time,  width/2-90,height/2+450);
+  textFont(font, 30);
+  text("sec.",  width/2+100,height/2+450);
   
 //debug max DB  
   //textFont(font, 20);
