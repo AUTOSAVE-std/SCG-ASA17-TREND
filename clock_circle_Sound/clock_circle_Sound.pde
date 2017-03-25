@@ -1,16 +1,18 @@
 import processing.sound.*;
+
 // CHANGE VALUE FOR EACH MODEL
-color fontcolorDB = color(255, 204, 0);
-color fontcolorSecound = color(255, 204, 0);
-float[] smooth= new float[10];
-
-color fillTimeLapsed = color(216, 127, 96); 
-
+color fontcolorDB =         color(255, 204, 0);
+color fontcolorSecound =    color(255, 204, 0);
+float[] smooth=             new float[10];
+int maxcamdb = 2800;
+color fillTimeLapsed =      color(216, 127, 96); 
+color fillTimecoundown =    color(43, 105, 107); 
 // UN CHANGE
 float angle, lastAngle;
 float d, h;
 int maximumDB = 0;
-
+int passmaxDB = 2750;
+int _db = 0;
 // Circle
 float currentTime;
 float fullCircleTime;
@@ -20,26 +22,37 @@ int begin = millis();
 int duration = 20;
 int time = 20;
 // font 
-PFont font;
+PFont font, font2;
 
 //Element
 PImage bg;
 PImage level;
 PImage knob;
+PImage knob_shadow;
+PImage lound;
+PImage lounder;
 Amplitude amp;
 AudioIn in;
 
 void setup() {
   fullScreen();
+  
   // sound start
-  amp = new Amplitude(this);
-  in = new AudioIn(this, 0);
+  amp =   new Amplitude(this);
+  in =    new AudioIn(this, 0);
   in.start();
   amp.input(in);
-  bg = loadImage("BG-01.png");
-  level = loadImage("level.png");
-  knob = loadImage("knob.png");
-  font = loadFont("SCG-Bold-200.vlw");
+  
+  
+  bg =             loadImage("BG-01.png");
+  level =          loadImage("level.png");
+  knob =           loadImage("level0.png");
+  knob_shadow =    loadImage("level2.png");
+  lound =          loadImage("lounder.png");
+  lounder =        loadImage("lounderand.png");
+  
+  font =   loadFont("SCG-Bold-200.vlw");
+  font2 =  loadFont("SCG-Bold-32.vlw");
   
   //init smooth val
   for ( int i = 0; i < smooth.length; ++i ){smooth[i] = 0;}
@@ -54,6 +67,7 @@ void setup() {
 
 
 void draw() {
+
   background(bg);
   
   //Level image here
@@ -71,31 +85,65 @@ void draw() {
   popMatrix();
   
   //KNOB position
-  image(knob,width/2-200,height/2-405);
+  image(knob_shadow,width/2-207,height/2-407);
+  pushMatrix();
+  translate(width/2,height/2-200);
+  ellipse(0,0,10,10);
+  rotate(map(currentTime,0,maxcamdb,0,4.5));
+  image(knob,-206,-205);
+  popMatrix();
+
   lastAngle = angle;
   
-  ///currentTime = random(4000)
-  
-  float h = map(amp.analyze(), 0, 1, 0, 2800);
-  // maximum is 2800
+  float h = map(amp.analyze(), 0, 0.9, 0, maxcamdb);
+  // maximum is maxcamdb 2500
   currentTime = smoothsound(h);
+  _db = (int)map( currentTime , 0, maxcamdb, 0, 120 );;
   angle = (currentTime/fullCircleTime) * TWO_PI;
   angle %= TWO_PI;
   
 // FONT DB current
   textFont(font, 100);
-  text((int)currentTime, width/2-55,height/2-170);
-
-// FONT secound
-  textFont(font, 200);
-  if (time > 0)  time = duration - (millis() - begin)/1000;
-  text(time,  width/2-90,height/2+450);
-  textFont(font, 30);
-  text("sec.",  width/2+100,height/2+450);
   
+  // 100+
+  if(_db >= 99){ text(_db, width/2-75,height/2-170); }
+  // 1-9
+  else if(_db <= 9) {text(_db, width/2-35,height/2-170);}
+  // 10-99
+  else text(_db, width/2-50,height/2-170);
+  
+  textFont(font2, 32);
+  text("dB", width/2-20,height/2-120);
+
+/////////////////////////////////////////////// LOWER PART
+// FONT sec.
+  fill(fillTimecoundown);
+  if (time > 0)  time = duration - (millis() - begin)/1000;
+  if (time<10){
+    textFont(font, 200);
+    text(time, width/2-50, height/2+450);
+    textFont(font2, 32);
+    text("sec", width/2+80, height/2+450);
+  }
+  else{
+    textFont(font, 200);
+    text(time,  width/2-90,height/2+450);
+    textFont(font2, 32);
+    text("sec",  width/2+110,height/2+450);
+  }
+  
+// IF SOUND LOWER
+  if (time <= 10 && time >= 9 && maximumDB <= passmaxDB) {image(lound, width/2-200,height/2+100);}
+  if (time <= 5 && time >= 4 && maximumDB <= passmaxDB) {image(lounder,width/2-200,height/2+100);}
+
+
+
+
 //debug max DB  
-  //textFont(font, 20);
-  //text(maximumDB,  width/2-50,height/2+300);
+  textFont(font, 20);
+  text(maximumDB,  200, 200);
+  stroke(20);
+  line(width/2, 0, width/2, height);
 }
 
 float smoothsound(float s_new) {
