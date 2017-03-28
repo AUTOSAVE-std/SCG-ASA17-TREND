@@ -26,7 +26,7 @@ class SoundCAP_main {
   issouldplay2=    false;
   fontcolorDB =         color(255, 204, 0);
   fontcolorSecound =    color(255, 204, 0);
-  smooth=               new float[10];
+  smooth=               new float[50];
   maxcamdb =            2800;
   fillTimeLapsed =      color(216, 127, 96); 
   fillTimecoundown =    color(43, 105, 107); 
@@ -89,7 +89,7 @@ class SoundCAP_main {
   float h = map(amp.analyze(), 0, 0.9, 0, maxcamdb);
   // maximum is maxcamdb 2500
   currentTime = smoothsound(h);
-  _db = (int)map( currentTime , 0, maxcamdb, 0, 120 );;
+  _db = (int)map( currentTime , 0, maxcamdb, 50, 110 );
   angle = (currentTime/fullCircleTime) * TWO_PI;
   angle %= TWO_PI;
   
@@ -140,14 +140,9 @@ class SoundCAP_main {
 //debug max DB  
   textFont(font, 20);
   text(maximumDB,  200, 200);
-  stroke(20);
-  line(width/2, 0, width/2, height);
   
   
   }
-  
-  
-  
   
   
   
@@ -160,7 +155,6 @@ class SoundCAP_main {
     average /= (float)(smooth.length); 
     return average;
   }
-  
   
   
   
